@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 # Tipos reutilizables
 Side = Literal["red", "blue"]
 Gender = Literal["masculino", "femenino"]
-MatchStatus = Literal["draft", "scheduled", "live", "finished", "cancelled"]
+MatchStatus = Literal["draft", "in_progress", "finished"]
 CaptureMode = Literal["live", "video"]
 Position = Literal["base", "escolta", "alero", "ala-pivot", "pivot"]
 EventType = Literal["scoring", "rebound", "foul", "pass", "steal"]
