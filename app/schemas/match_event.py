@@ -18,7 +18,7 @@ class PlayerEventBase(MatchEventBase):
 
 
 class MatchScoringEventCreate(PlayerEventBase):
-    event_type: str = "scoring"
+    event_type: Literal["scoring"] = "scoring"
     has_scored: bool = False
     points: int = Field(default=0, ge=0, le=3)
     scoring_type: ScoringType
@@ -26,23 +26,23 @@ class MatchScoringEventCreate(PlayerEventBase):
 
 
 class MatchReboundEventCreate(PlayerEventBase):
-    event_type = "rebound"
+    event_type: Literal["rebound"] = "rebound"
     rebound_type: ReboundType
 
 
 class MatchFoulEventCreate(PlayerEventBase):
-    event_type = "foul"
+    event_type: Literal["foul"] = "foul"
     foul_type: FoulType
     fouled_player_id: uuid.UUID
 
 
 class MatchPassEventCreate(PlayerEventBase):
-    event_type = "pass"
+    event_type: Literal["pass"] = "pass"
     reciver_player_id: uuid.UUID
 
 
 class MatchStealEventCreate(PlayerEventBase):
-    event_type = "steal"
+    event_type: Literal["steal"] = "steal"
     stolen_from_player_id: uuid.UUID
 
 

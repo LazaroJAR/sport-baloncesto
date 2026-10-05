@@ -109,6 +109,7 @@ class Match(Base):
     )
     scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     capture_mode: Mapped[str] = mapped_column(String(16), nullable=False)
+    video_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     status: Mapped[str] = mapped_column(String(24), nullable=False, default="draft")
     winner_side: Mapped[str | None] = mapped_column(String(8), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)

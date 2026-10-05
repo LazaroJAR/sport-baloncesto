@@ -11,6 +11,7 @@ class MatchBase(BaseModel):
     regulation: uuid.UUID
     scheduled_at: datetime
     capture_mode: CaptureMode
+    video_url: str | None = None
     notes: str | None = None
 
     @model_validator(mode="after")

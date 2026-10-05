@@ -79,7 +79,7 @@ def _build_event(match_id: uuid.UUID, data: MatchEventBase) -> MatchEvent:
             reciver_player_id=data.reciver_player_id
         )
     elif data.event_type == "steal":
-        return MatchPassEvent(
+        return MatchStealEvent(
             **base,
             player_id = data.player_id,
             side=data.side,
