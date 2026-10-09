@@ -27,7 +27,7 @@ async def _get_or_create_stats(db: Session, match_id: uuid.UUID, side: str) -> M
         free_throws_scored=0,
         offensive_rebound=0,
         defensive_rebound=0,
-        fiba_ranking_position=0,   # o el valor que corresponda
+        #fiba_ranking_position=0,   o el valor que corresponda
     ).on_conflict_do_nothing(index_elements=["match_id", "side"])
     await db.execute(stmt)
 
