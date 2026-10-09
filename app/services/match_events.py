@@ -1,4 +1,3 @@
-# app/services/basketball/events.py
 import uuid
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -12,7 +11,7 @@ from app.models.basketball import (
 from app.schemas import player
 from app.schemas.match_event import MatchEventBase
 
-def _get_or_create_stats(db: Session, match_id: uuid.UUID, side: str) -> MatchSideStats:
+async def _get_or_create_stats(db: Session, match_id: uuid.UUID, side: str) -> MatchSideStats:
     # Intenta crear la fila si no existe
     stmt = pg_insert(MatchSideStats).values(
         id=uuid.uuid4(),
@@ -30,10 +29,10 @@ def _get_or_create_stats(db: Session, match_id: uuid.UUID, side: str) -> MatchSi
         defensive_rebound=0,
         fiba_ranking_position=0,   # o el valor que corresponda
     ).on_conflict_do_nothing(index_elements=["match_id", "side"])
-    db.execute(stmt)
+    await db.execute(stmt)
 
     # Bloquea la fila para actualizarla de forma segura
-    return db.execute(
+    return await db.execute(
         select(MatchSideStats)
         .where(MatchSideStats.match_id == match_id, MatchSideStats.side == side)
         .with_for_update()
@@ -127,9 +126,9 @@ def _apply_event_to_stats(
             stats_side.defensive_rebound += 1
 
 
-def record_event(db: Session, match_id: uuid.UUID, data: MatchEventBase) -> MatchEvent:
+async def record_event(db: Session, match_id: uuid.UUID, data: MatchEventBase) -> MatchEvent:
     # 1. Validar partido
-    match = db.get(Match, match_id)
+    match = await db.get(Match, match_id)
     if not match:
         raise ValueError("Partido no encontrado")
     if match.status not in ("in_progress", "finished"):
@@ -142,16 +141,16 @@ def record_event(db: Session, match_id: uuid.UUID, data: MatchEventBase) -> Matc
     # 3. Crear e insertar el evento
     event = _build_event(match_id, data)
     db.add(event)
-    db.flush()  # para obtener el id si lo necesitas
+    await db.flush()  # para obtener el id si lo necesitas
 
     # 4. Actualizar estadísticas
     _apply_event_to_stats(stats_red, stats_blue, event)
 
-    db.flush()
+    await db.flush()
     return event
 
 
-def recalculate_stats(db: Session, match_id: uuid.UUID):
+async def recalculate_stats(db: Session, match_id: uuid.UUID):
     stats_red = _get_or_create_stats(db, match_id, "red")
     stats_blue = _get_or_create_stats(db, match_id, "blue")
 
@@ -169,21 +168,21 @@ def recalculate_stats(db: Session, match_id: uuid.UUID):
         s.defensive_rebound = 0
         # ... etc.
 
-    events = db.execute(
+    events = await db.execute(
         select(MatchEvent).where(MatchEvent.match_id == match_id)
     ).scalars().all()
 
     for ev in events:
         _apply_event_to_stats(stats_red, stats_blue, ev)
 
-    db.flush()
+    await db.flush()
 
-def delete_event(db: Session, event_id: uuid.UUID):
-    event = db.get(MatchEvent, event_id)
+async def delete_event(db: Session, event_id: uuid.UUID):
+    event = await db.get(MatchEvent, event_id)
     if not event:
         raise ValueError("Evento no encontrado")
     match_id = event.match_id
-    db.delete(event)
-    db.flush()
-    recalculate_stats(db, match_id)
+    await db.delete(event)
+    await db.flush()
+    await recalculate_stats(db, match_id)
 

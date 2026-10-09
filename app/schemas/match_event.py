@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Annotated, Union
 import uuid
 from datetime import date, datetime
 
@@ -63,6 +63,7 @@ class PlayerEventRead(MatchEventRead):
 
 
 class MatchScoringEventRead(PlayerEventRead):
+    event_type: Literal["scoring"]
     has_scored: bool
     points: int
     scoring_type: str
@@ -70,17 +71,33 @@ class MatchScoringEventRead(PlayerEventRead):
 
 
 class MatchReboundEventRead(PlayerEventRead):
+    event_type: Literal["rebound"]
     rebound_type: str
 
 
 class MatchFoulEventRead(PlayerEventRead):
+    event_type: Literal["foul"]
     foul_type: str
     fouled_player_id: uuid.UUID
 
 
 class MatchPassEventRead(PlayerEventRead):
+    event_type: Literal["pass"]
     reciver_player_id: uuid.UUID
 
 
 class MatchStealEventRead(PlayerEventRead):
+    event_type: Literal["steal"]
     stolen_from_player_id: uuid.UUID
+
+
+MatchEventReadUnion = Annotated[
+    Union[
+        MatchScoringEventRead,
+        MatchReboundEventRead,
+        MatchFoulEventRead,
+        MatchPassEventRead,
+        MatchStealEventRead,
+    ],
+    Field(discriminator="event_type"),
+]

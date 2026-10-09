@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from turtle import position
 from typing import Annotated
 from uuid import UUID
 

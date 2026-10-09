@@ -177,7 +177,7 @@ class MatchScoringEvent(PlayerEvent):
     has_scored: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     points: Mapped[int] = mapped_column(Integer, default=0)
     scoring_type: Mapped[str] = mapped_column(String(50), nullable=False) #Tiro libre, Tiro de cancha
-    previous_action: Mapped[str] = mapped_column(String(50), nullable=True) #Catch & Shot, Dribling, Pick & Roll, Pick & Pop
+    previous_action: Mapped[str | None] = mapped_column(String(50), nullable=True) #Catch & Shot, Dribling, Pick & Roll, Pick & Pop
     __mapper_args__ = {"polymorphic_identity": "scoring"}
 
 

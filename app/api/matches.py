@@ -20,7 +20,7 @@ from app.schemas.match import (
     MatchStatsUpsert
 )
 
-router = APIRouter(prefix="/matchs", tags=["basketball-partidos"])
+router = APIRouter(prefix="/matches", tags=["basketball-partidos"])
 
 async def _get_side_stats(db: AsyncSession, match_id: UUID) -> list[MatchSideStatsRead]:
     r = await db.execute(
@@ -29,7 +29,7 @@ async def _get_side_stats(db: AsyncSession, match_id: UUID) -> list[MatchSideSta
     return [MatchSideStatsRead.model_validate(x) for x in r.scalars().all()]
 
 @router.get("", response_model=list[MatchRead])
-async def list_matchs(
+async def list_matches(
     _: Annotated[dict, Depends(basketball_read)],
     db: Annotated[AsyncSession, Depends(get_db)],
     status_filter: str | None = None,
